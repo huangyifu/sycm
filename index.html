@@ -1,1 +1,32 @@
-<html>dddd</html>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>生意参谋</title>
+</head>
+<body>
+<form target="_blank" method="get" id="form"> <input placeholder="itemId" type="text" id="itemId"> <button onclick="gosycm()">Open</button>   </form>
+
+
+<script type="text/javascript">
+	function gosycm(){
+		var url="https://sycm.taobao.com/mq/industry/rank/industry.htm?spm=a21ag.7749213.0.0.lG188h#/?seller=-1&device=0&cateId=16&dateType=recent1&dateRange=2016-09-21%7C2016-09-21&view=detail&rankType=1&itemId=";
+		var form=document.getElementById("form");
+		var itemId=document.getElementById("itemId").value;
+		if(itemId.indexOf("?id=")>0){ 
+			itemId=itemId.substring(itemId.indexOf("?id=")+4);
+		}else if(itemId.indexOf("&id=")>0){
+			itemId=itemId.substring(itemId.indexOf("&id=")+4);
+		} 
+		if(itemId.indexOf("&")>0){
+			itemId=itemId.substring(0,itemId.indexOf("&"));
+		}
+		document.getElementById("itemId").value=itemId;
+		console.log("itemId="+itemId);
+		form.action=url+itemId;
+		form.submit();
+	}
+
+</script>
+</body>
+</html>
