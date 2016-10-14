@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>直通车搜索框取词工具</title>
+</head>
+<body>
+关键词：<input type="text" id="word">
+<button onclick="search(document.getElementById('word').value)">开始</button>
+<br>
+不包含：<input type="text" id="exclude" onchange="show()" style="width:80%" value="男 童 学生">
+<script type="text/javascript">
+var words=[];
+var searched={};
+
+
+function search(word){
+	console.log(word);
+	searched[word]=true;
+	var el = document.createElement('script');
+	el.type = 'text/javascript';
+	el.src = "https://subway.simba.taobao.com/bidword/tool/adgroup/getSuggestWord.htm?adgroupId=674574513&word="+encodeURIComponent(word)+"&callback=callback";
+	document.body.appendChild(el);
+}
+function array_contains(arr,val){
+	for (var j = 0; j < arr.length; j++) {
+		if(arr[j]==val){
+			return true;
+		}
+	}
+	return false;
+}
+function callback(data){
+	console.log(data);
+	var isOk=false;
+	for (var i = 0; i < data.result.length; i++) {
+		var w=data.result[i];
+		if(w.flag==1){
+			isOk=true;
+		}
+		
+		if(array_contains(words,w.word))continue;
+
+		words.push(w.word);
+		if(w.attribute && w.attribute.length>0){
+			for (var j = w.attribute.length - 1; j >= 0; j--) {
+				words.push(w.word+" "+w.attribute[j]);
+			}
+		}
+		
+	}
+	if(isOk){
+		show();
+	}else{
+		alert("请重试");
+	}
+}
+
+function show(){
+	
+	var count=0;
+	var exclude=document.getElementById("exclude").value.split(" ");
+	var innerHTML="";
+	for (var i = 0; i < words.length; i++) {
+		if(exclude.length>0){
+			var ignore=false;
+			for (var j = 0; j < exclude.length; j++) {
+				if(exclude[j].length>0 && words[i].indexOf(exclude[j])>=0){
+					ignore=true;
+					console.log("忽略 "+words[i]+"=="+exclude[j]);
+					break;
+				}
+			}
+			if(ignore)continue;
+		}
+		count++;
+		if(searched[words[i]]==true){
+			innerHTML+="<button style='background-color:red' onclick=\"search('"+words[i].trim()+"')\">"+words[i]+"</button><br>";
+		}else{
+			innerHTML+="<button onclick=\"search('"+words[i].trim()+"')\">"+words[i]+"</button><br>";
+		}
+		
+	}
+	document.getElementById("words").innerHTML="共"+count+"/"+words.length+"个<br><br>"+innerHTML;
+}
+</script>
+<div id="words"></div>
+</body>
+</html>
